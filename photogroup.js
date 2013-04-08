@@ -1,5 +1,5 @@
 /*	
-	photoItems - A required array of photoItems, which can be a url string or and object with image and thumb properties, {image:"url",thumb:"url"}.
+	photoUrls - A required array of photo items, which can be a url string or an object with image and thumb properties, {image:"url",thumb:"url"}.
 	thumbWidth
 	thumbHeight
 	rowSpacing
@@ -10,7 +10,7 @@
 */
 jQuery.fn.photoGroup = function(options) {
 	if (!options || !$.isArray(options.photoUrls))
-		throw "PhotoGroup argument photoItems should be array.";
+		throw "PhotoGroup argument photoUrls should be array.";
 	
 	var photoUrls = options.photoUrls,
 		photoUrlsCount = photoUrls.length, i,
@@ -31,23 +31,20 @@ jQuery.fn.photoGroup = function(options) {
 		rows = Math.ceil( photoUrlsCount / columns ),
 		w=0,h=0, row=0, col=0,
 		html = ['<div style="width:',outerWidth,'px;height:',(rows*(tBorderSize+thumbHeight+tBorderSize)+(rows-1)*rowSpacing),'px;" >'];
+		
 	if (!window.photoGroupScalars)
 		window.photoGroupScalars = {};
 	for (i=0;i<photoUrlsCount;i++){
-		var photoUrl = photoUrls[i];
-/*
-		var tw, th, scale;
-		if (photoItem.width > photoItem.height) {
-			scale = thumbWidth/photoItem.width;
-			tw = thumbWidth;
-			th = Math.round( photoItem.height*(scale) );
-		}
+		var photoUrl = photoUrls[i], imageUrl, thumbUrl;
+		if (typeof photoUrl == "string")
+			imageUrl = photoUrl;
 		else {
-			scale = thumbHeight/photoItem.height;
-			th = Math.round( thumbHeight );
-			tw = Math.round( photoItem.width*scale );
+			if (!(photoUrl && photoUrl.image && photoUrl.thumb))
+				throw "photoUrls should be a url string or an object with image and thumb properties.";
+			imageUrl = photoUrl.image;
+			thumbUrl = photoUrl.thumb;
 		}
-*/
+		
 		html = html.concat([
 /* 			'<div style="display:inline;width:',thumbWidth,'px;height:',thumbHeight,'px;margin-right:',rowSpacing,'px;border:',tBorder,'" >', */
 				'<img class=pGrpImg id=pGrpImg',parentId,i,' src="',photoUrl,'" style="position:absolute;top:0;left:0;display:none;"',
@@ -64,7 +61,6 @@ jQuery.fn.photoGroup = function(options) {
 		}
 		else
 			col++;
-/* 		w += tw; */
 	}
 	html.push("</div>");
 	html = html.join("");
@@ -85,8 +81,14 @@ jQuery.fn.photoGroup = function(options) {
 	});
 	
 	$(".pGrpImg").off('click').on('click', function(e){
-		var $this = $(this), w = parseInt($this.css("width")), h = parseInt($this.css("height")), src = $this.attr("src"), ww = window.innerWidth, wh = window.innerHeight,
-			scale = 1,iw, ih;
+		var $this = $(this), 
+			w = parseInt($this.css("width")),
+			h = parseInt($this.css("height")),
+			src = $this.attr("src"),
+			ww = window.innerWidth,
+			wh = window.innerHeight,
+			scale = 1, iw, ih;
+			
 		if (w>h && w>ww)
 			scale = ww/w;
 		else if (h>wh)
