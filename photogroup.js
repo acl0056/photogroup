@@ -53,7 +53,7 @@ jQuery.fn.photoGroup = function(options) {
 				thumbWidth-tBorderSize,'px;height:',thumbHeight-tBorderSize,'px;" class=photoGroupBackground />'
 		]);
 		imageHtml = imageHtml.concat([
-			'<img class=pGrpImg id=',imgId,' src="',photoUrl,'" style="position:absolute;top:0;left:0;display:none;"',
+			'<img class=pGrpImg id=',imgId,' src="',imageUrl,'" style="position:absolute;top:0;left:0;display:none;"',
 			' onload="var $t=$(this);$t.css({display:&quot;&quot;});var w=parseInt($t.css(&quot;width&quot;)),h=parseInt($t.css(&quot;height&quot;));',
 			'var v,id=&quot;',imgId,'&quot;,s=$.photoGroupScalars[id]=(w>h?(',thumbWidth,'/w):(',thumbHeight,'/h));',
 			'v=$.photoGroupVectors[id]=[',x+borderOffset,'-(w-',thumbWidth,')/2, ',y+borderOffset,'-(h-',thumbHeight,')/2];',
