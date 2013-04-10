@@ -1,5 +1,5 @@
 /*
-	File - photogroup.js
+	File: photogroup.js
 	
 The MIT License (MIT)
 Copyright (c) 2013 Adam Lockhart
@@ -12,11 +12,21 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 
 
-/*	
-	photoUrls - A required array of photo items, which can be a url string or an object with image and thumb properties, {image:"url",thumb:"url"}.
-	thumbWidth - An optional width for the thumbnails. Defaults to 160.
-	thumbHeight - An optional height for the thumbnails. Defaults to 160.
-	mouseoverScale - An optional scalar used to increase image scale on mouseover. Defaults to 1.5.
+/*	Function: photoGroup(options)
+	Takes an array of urls and creates a photogroup in the div contained in the jQuery object, on which this function is called.
+	
+	Parameters:
+		options - An object with requied and optional arguments.
+		
+		(start code)
+		Required:
+			photoUrls - A required array of photo items, which can be a url string or an object with image and thumb properties, {image:"url",thumb:"url"}.
+			
+		Optional:
+			thumbWidth - An optional width for the thumbnails. Defaults to 160.
+			thumbHeight - An optional height for the thumbnails. Defaults to 160.
+			mouseoverScale - An optional scalar used to increase image scale on mouseover. Defaults to 1.5.
+ 		(end)
 */
 jQuery.fn.photoGroup = function(options) {
 	if (!options || !$.isArray(options.photoUrls))
