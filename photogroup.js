@@ -1,27 +1,43 @@
+/*
+	File - photogroup.js
+	
+The MIT License (MIT)
+Copyright (c) 2013 Adam Lockhart
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+
 /*	
 	photoUrls - A required array of photo items, which can be a url string or an object with image and thumb properties, {image:"url",thumb:"url"}.
-	thumbWidth -
-	thumbHeight - 
+	thumbWidth - An optional width for the thumbnails. Defaults to 160.
+	thumbHeight - An optional height for the thumbnails. Defaults to 160.
+	mouseoverScale - An optional scalar used to increase image scale on mouseover. Defaults to 1.5.
 */
 jQuery.fn.photoGroup = function(options) {
 	if (!options || !$.isArray(options.photoUrls))
 		throw "PhotoGroup argument photoUrls should be array.";
-	
+	this.css({width:"100%"});
 	var photoUrls = options.photoUrls,
 		photoUrlsCount = photoUrls.length, i,
 		thumbWidth = options.thumbWidth?options.thumbWidth:160,
 		thumbHeight =  options.thumbWidth?options.thumbWidth:160,
+		mouseoverScale = options.mouseoverScale?options.mouseoverScale:1.5,
 		$parent = this.parent(),
 		parentId = this.attr("id"),
 		outerWidth = $parent.innerWidth() - parseInt($parent.css('padding-left')) - parseInt($parent.css('padding-right')),
 		w=0, h=0, row=0, col=0, tOuterWidth, tBorderSize,borderOffset, html, rows, columns, backHtml = [], imageHtml = [];
 		
 	if (!$.photoGroupScalars)
-		$.photoGroupScalars = {};
+		$.photoGroupScalars = {}; // A class scoped scalar dictionary is used to find the original scale by id.
 	if (!$.photoGroupVectors)
-		$.photoGroupVectors = {};
+		$.photoGroupVectors = {}; // A class scoped vector dictionary is used to find the original translation vector by id.
 	if (!$.photoGroupCount)
-		$.photoGroupCount = 1;
+		$.photoGroupCount = 1; // A class scoped instance count is used to help ensure unique ids.
 	
 	// Test the photoGroupBackground class for border width.  This is needed to calculate the thumbnail cell sizes.
 	$("body").append("<div id=photoGroupBackgroundTester class=photoGroupBackground style=display:none; />");
@@ -36,10 +52,20 @@ jQuery.fn.photoGroup = function(options) {
 	borderOffset =  (tBorderSize - (tBorderSize % 2))/2;
 	
 	// Generate the html
-	html = ['<div style="width:',outerWidth,'px;height:',(rows*(tBorderSize+thumbHeight+tBorderSize)),'px;" >'];
-	
+	$.photoGroupReady = function($img, x, y) {
+		var w = parseInt($img.css("width")),
+			h = parseInt($img.css("height")),
+			id = $img.attr("id"),
+			s = $.photoGroupScalars[id] = (w>h?(thumbWidth/w):(thumbHeight/h)),
+			v = $.photoGroupVectors[id] = [x+borderOffset-(w-thumbWidth)/2, y+borderOffset-(h-thumbHeight)/2];
+		$img.css({display:""});
+		$img.css({ translate:[v[0],v[1]], scale:s });
+	};
+	var idAppend = $.photoGroupCount+parentId;
+	html = ['<div id=pGrpDivO',idAppend,' style="width:',outerWidth,'px;height:',(rows*(tBorderSize+thumbHeight)),'px;" >'];
 	for (i=0;i<photoUrlsCount;i++){
-		var photoUrl = photoUrls[i], imageUrl, thumbUrl, x = col*thumbWidth, y = row*thumbHeight, imgId = 'pGrpImg'+$.photoGroupCount+parentId+i;
+		var photoUrl = photoUrls[i], imageUrl, thumbUrl, x = col*thumbWidth, y = row*thumbHeight,
+			imgId = 'pGrpImg'+idAppend+i, divId = 'pGrpDiv'+idAppend+i;
 		if (typeof photoUrl == "string")
 			imageUrl = photoUrl;
 		else {
@@ -49,15 +75,12 @@ jQuery.fn.photoGroup = function(options) {
 			thumbUrl = photoUrl.thumb;
 		}
 		backHtml = backHtml.concat([
-			'<div style="position:absolute;top:',y,'px;left:',x,'px;display:inline;width:',
+			'<div id=',divId,' style="position:absolute;top:',y,'px;left:',x,'px;display:inline;width:',
 				thumbWidth-tBorderSize,'px;height:',thumbHeight-tBorderSize,'px;" class=photoGroupBackground />'
 		]);
 		imageHtml = imageHtml.concat([
-			'<img class=pGrpImg id=',imgId,' src="',imageUrl,'" style="position:absolute;top:0;left:0;display:none;"',
-			' onload="var $t=$(this);$t.css({display:&quot;&quot;});var w=parseInt($t.css(&quot;width&quot;)),h=parseInt($t.css(&quot;height&quot;));',
-			'var v,id=&quot;',imgId,'&quot;,s=$.photoGroupScalars[id]=(w>h?(',thumbWidth,'/w):(',thumbHeight,'/h));',
-			'v=$.photoGroupVectors[id]=[',x+borderOffset,'-(w-',thumbWidth,')/2, ',y+borderOffset,'-(h-',thumbHeight,')/2];',
-			'$t.css({ translate:[v[0],v[1]], scale:s });" />',
+			'<img class=pGrpImg id=',imgId,' src="',imageUrl,'" style="position:absolute;max-width:none;top:0;left:0;display:none;"',
+			' onload="$.photoGroupReady($(this), ',x,', ',y,');" />',
 		]);
 		if (col == columns-1) {
 			row++;
@@ -79,17 +102,14 @@ jQuery.fn.photoGroup = function(options) {
 		mobile = true;
 		android = true;
 	}
-	this.resize(function(){
-		console.log('resize');
-	});
-	
+	var $currentMask;
 	// Define event handlers
 	if (!$.pGrpImgMouseEnter) {
 		$.pGrpImgMouseEnter = function(e){
 			var $this = $(this),
 				scale = $.photoGroupScalars[ $this.attr("id")];
 			$this.css({"z-index":2});
-			$this.transition({ scale: scale*1.5 }, 'fast'); 
+			$this.transition({ scale: scale*mouseoverScale }, 'fast'); 
 		}
 		$.pGrpImgMouseleave = function(e){
 			var $this = $(this),
@@ -123,15 +143,15 @@ jQuery.fn.photoGroup = function(options) {
 			ih = parseInt(scale*h);
 			x = (ww-iw)/2 - (w-iw)/2;
 			y = (wh-ih)/2 - (h-ih)/2;
-			var style = " style='position:fixed;width:40px;height:30px;top:";
+			var style = " style='position:fixed;font-size:xx-large;font-weight:900;width:40px;height:30px;z-index:3;top:";
 			$("body").append(
 				"<div id=imgViewMask style='position:fixed;background-color:rgba(0,0,0,0.5);top:0;left:0;width:"+ww+"px;height:"+wh+"px;' >"+
 					"<div id=photoGroupPrev class=photoGroupButton"+style+(wh/2-15)+"px;left:10px;' >&nbsp;&lt;&nbsp;</div>"+
 					"<div id=photoGroupNext class=photoGroupButton"+style+(wh/2-15)+"px;left:"+(ww-50)+"px;' >&nbsp;&gt;&nbsp;</div>"+
 				"</div>"
 			);
-				
-			var $mask = $("#imgViewMask");
+			
+			var $mask = $currentMask = $("#imgViewMask");
 			$mask.append($this);
 			if ($.photoGroupNavigation)
 				$this.css({ translate:[x,y],scale: scale });
@@ -152,14 +172,18 @@ jQuery.fn.photoGroup = function(options) {
 				});
 			});
 			
-			// PhotoGroup navigation handlers
-			$("#photoGroupPrev").click(function(e){
-				e.stopPropagation();
+			$mask.destroy = function() {
 				$this.css({ translate:[v[0],v[1]], scale: $.photoGroupScalars[thisId] });
 				$prev.after($this);
 				$this.css({"z-index":1});
 				$this.on('mouseenter', $.pGrpImgMouseEnter).on('mouseleave', $.pGrpImgMouseleave).on('click', $.pGrpImgClick);
-				$mask.remove();
+				this.remove();
+			};
+			
+			// PhotoGroup navigation handlers
+			$("#photoGroupPrev").click(function(e){
+				e.stopPropagation();
+				$mask.destroy();
 				$prev.click();
 			});
 			if (!$prev.hasClass("pGrpImg"))
@@ -167,11 +191,7 @@ jQuery.fn.photoGroup = function(options) {
 			
 			$("#photoGroupNext").click(function(e){
 				e.stopPropagation();
-				$this.css({ translate:[v[0],v[1]], scale: $.photoGroupScalars[thisId] });
-				$prev.after($this);
-				$this.css({"z-index":1});
-				$this.on('mouseenter', $.pGrpImgMouseEnter).on('mouseleave', $.pGrpImgMouseleave).on('click', $.pGrpImgClick);
-				$mask.remove();
+				$mask.destroy();
 				$next.click();
 			});
 			if (!$next.hasClass("pGrpImg"))
@@ -181,4 +201,42 @@ jQuery.fn.photoGroup = function(options) {
 	$(".pGrpImg").off('mouseenter').on('mouseenter', $.pGrpImgMouseEnter)
 		.off('mouseleave').on('mouseleave', $.pGrpImgMouseleave)
 		.off('click').on('click', $.pGrpImgClick);
+		
+	// Re-calculate row and columns on resize.
+	var delayInterval;
+	var start, end;
+	var self = this;
+	function delayedResize(){
+		clearInterval(delayInterval);
+		outerWidth = parseInt(self.css("width"));
+		columns = Math.floor( outerWidth / tOuterWidth );
+		rows = Math.ceil( photoUrlsCount / columns );
+		$("#pGrpDivO"+idAppend).css({width:outerWidth+"px",height:(rows*(tBorderSize+thumbHeight))+"px" });
+		row = 0;
+		col = 0;
+		for (i=0;i<photoUrlsCount;i++){
+			var imgId = 'pGrpImg'+idAppend+i, divId = 'pGrpDiv'+idAppend+i;
+			var x = col*thumbWidth, y = row*thumbHeight;
+			$("#"+divId).css({left:x,top:y});
+			var $img = $("#"+imgId), w = parseInt($img.css("width")), h = parseInt($img.css("height")), 
+				v = $.photoGroupVectors[imgId] = [x+borderOffset-(w-thumbWidth)/2, y+borderOffset-(h-thumbHeight)/2];
+			$img.css({ translate:[v[0],v[1]]});
+			if (col == columns-1) {
+				row++;
+				col = 0;
+			}
+			else
+				col++;
+		}
+		if ($currentMask && $currentMask.length) {
+			var $img = $currentMask.find("img");
+			$currentMask.destroy();
+			$img.click();
+			// TODO move next button.
+		}
+	}
+	$(window).resize(function(){
+		clearInterval(delayInterval);
+		delayInterval = setInterval(delayedResize,100);
+	});
 };
