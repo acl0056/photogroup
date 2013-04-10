@@ -9,7 +9,8 @@ REQUIRES jQuery and the [Transit jQuery plugin](https://github.com/rstacruz/jque
 ### Usage:
 HTML:
 
-    <div id=myDiv>
+    <div id=myDiv style="width:100%;" />
+    <!-- if the div has a flexible width photogroup will adjust its rows, columns and height when resized -->
 
 Javascript:
 
