@@ -1,8 +1,10 @@
 photogroup
 ==========
 
-photogroup.js is an animated jQuery plugin image viewer.  It determines the number of rows and columns of its thumbnails automatically based in its parent's width and a fixed thumbnail size.  The thumbnail width and height can optionally be passed in.  Many gallery and image viewers available presume that you will be adding them to composed HTML. This project is useful for generated HTML, for example on a BBS to display an unknown number of grouped image uploads in an unknown width depending on browser window size.
+#### photogroup.js is an animated jQuery plugin image viewer.
+Many gallery and image viewers available presume that you will be adding them to composed HTML. This project is useful for generated HTML, for example on a BBS to display an unknown number of grouped image uploads are attached to a post in an unknown width depending on browser window size.
 
+Photogroup determines the number of rows and columns of its thumbnails automatically based in its parent's width and a fixed thumbnail size, which can optionally be passed into the constructor. 
 ## Dependencies:
 REQUIRES jQuery and the [Transit jQuery plugin](https://github.com/rstacruz/jquery.transit).
 
