@@ -61,12 +61,27 @@ jQuery.fn.photoGroup = function(options) {
 	rows = Math.ceil( photoUrlsCount / columns );
 	borderOffset =  (tBorderSize - (tBorderSize % 2))/2;
 	
+	function getScale(containerWidth, containerHeight, imageWidth, imageHeight) {
+		if (imageWidth > imageHeight) {
+			if (imageHeight * containerWidth / imageWidth > containerHeight)
+				return containerHeight/imageHeight;
+			else
+				return containerWidth/imageWidth;
+		}
+		else {
+			if (imageWidth * containerHeight / imageHeight > containerWidth)
+				return containerWidth/imageWidth;
+			else
+				return containerHeight/imageHeight;
+		}
+	}
+	
 	// Generate the html
 	$.photoGroupReady = function($img, x, y) {
 		var w = parseInt($img.css("width")),
 			h = parseInt($img.css("height")),
 			id = $img.attr("id"),
-			s = $.photoGroupScalars[id] = (w>h?(thumbWidth/w):(thumbHeight/h)),
+			s = $.photoGroupScalars[id] = getScale(thumbWidth, thumbHeight, w, h),
 			v = $.photoGroupVectors[id] = [x+borderOffset-(w-thumbWidth)/2, y+borderOffset-(h-thumbHeight)/2];
 		$img.css({display:""});
 		$img.css({ translate:[v[0],v[1]], scale:s });
@@ -103,15 +118,7 @@ jQuery.fn.photoGroup = function(options) {
 	html.push("</div>");
 	html = html.join("");
 	this.html(html);
-	
-	// Unused so far:
-	var mobile = false, android = false;
-	if(navigator.userAgent.match(/iPhone|iPad|iPod/i))
-		mobile = true;
-	else if(navigator.userAgent.match(/Android/i)) {
-		mobile = true;
-		android = true;
-	}
+
 	var $currentMask;
 	// Define event handlers
 	if (!$.pGrpImgMouseEnter) {
@@ -145,10 +152,7 @@ jQuery.fn.photoGroup = function(options) {
 				scale = 1, iw, ih, x, y;
 			
 			$this.off('mouseleave').off('mouseenter').off('click');
-			if (w>h && w>ww)
-				scale = ww/w;
-			else if (h>wh)
-				scale = wh/h;
+			scale = getScale(￼ww, wh, w, h);
 			iw = parseInt(scale*w);
 			ih = parseInt(scale*h);
 			x = (ww-iw)/2 - (w-iw)/2;
