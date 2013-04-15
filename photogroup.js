@@ -35,7 +35,7 @@ jQuery.fn.photoGroup = function(options) {
 	var photoUrls = options.photoUrls,
 		photoUrlsCount = photoUrls.length, i,
 		thumbWidth = options.thumbWidth?options.thumbWidth:160,
-		thumbHeight =  options.thumbWidth?options.thumbWidth:160,
+		thumbHeight =  options.thumbWidth?options.thumbHeight:160,
 		mouseoverScale = options.mouseoverScale?options.mouseoverScale:1.5,
 		$parent = this.parent(),
 		parentId = this.attr("id"),
@@ -101,10 +101,12 @@ jQuery.fn.photoGroup = function(options) {
 		}
 		backHtml = backHtml.concat([
 			'<div id=',divId,' style="position:absolute;top:',y,'px;left:',x,'px;display:inline;width:',
-				thumbWidth-tBorderSize,'px;height:',thumbHeight-tBorderSize,'px;" class=photoGroupBackground />'
+				thumbWidth-tBorderSize,'px;height:',thumbHeight-tBorderSize,'px;" class=photoGroupBackground >',
+/* 				(thumbUrl?'<img src="'+thumbUrl+'" ':""), */
+			'</div>'
 		]);
 		imageHtml = imageHtml.concat([
-			'<img class=pGrpImg id=',imgId,' src="',imageUrl,'" style="position:absolute;max-width:none;top:0;left:0;display:none;"',
+			'<img class=pGrpImg id=',imgId,' src="',imageUrl,'" style="position:absolute;max-height:none;max-width:none;top:0;left:0;display:none;"',
 			' onload="$.photoGroupReady($(this), ',x,', ',y,');" />',
 		]);
 		if (col == columns-1) {
@@ -125,13 +127,13 @@ jQuery.fn.photoGroup = function(options) {
 		$.pGrpImgMouseEnter = function(e){
 			var $this = $(this),
 				scale = $.photoGroupScalars[ $this.attr("id")];
-			$this.css({"z-index":2});
+			$this.css({"z-index":1});
 			$this.transition({ scale: scale*mouseoverScale }, 'fast'); 
 		}
 		$.pGrpImgMouseleave = function(e){
 			var $this = $(this),
 				scale = $.photoGroupScalars[ $this.attr("id") ];
-			$this.css({"z-index":1});
+			$this.css({"z-index":0});
 			$this.transition({ scale: scale }, 'fast');
 		}
 		$.pGrpImgClick = function(e){
@@ -152,7 +154,7 @@ jQuery.fn.photoGroup = function(options) {
 				scale = 1, iw, ih, x, y;
 			
 			$this.off('mouseleave').off('mouseenter').off('click');
-			scale = getScale(￼ww, wh, w, h);
+			scale = getScale(ww, wh, w, h);
 			iw = parseInt(scale*w);
 			ih = parseInt(scale*h);
 			x = (ww-iw)/2 - (w-iw)/2;
@@ -176,9 +178,9 @@ jQuery.fn.photoGroup = function(options) {
 			$.photoGroupNavigation = true;
 			
 			$mask.click(function(){
+				$this.css({"z-index":4});
 				$this.transition({ translate:[v[0]+offsetLeft,v[1]+offsetTop], scale: $.photoGroupScalars[thisId] }, "fast", function(){
 					$prev.after($this);
-					$this.css({"z-index":1});
 					$this.css({ translate:[v[0],v[1]] });
 					$this.on('mouseenter', $.pGrpImgMouseEnter).on('mouseleave', $.pGrpImgMouseleave).on('click', $.pGrpImgClick);
 					$mask.remove();
@@ -189,7 +191,7 @@ jQuery.fn.photoGroup = function(options) {
 			$mask.destroy = function() {
 				$this.css({ translate:[v[0],v[1]], scale: $.photoGroupScalars[thisId] });
 				$prev.after($this);
-				$this.css({"z-index":1});
+				$this.css({"z-index":0});
 				$this.on('mouseenter', $.pGrpImgMouseEnter).on('mouseleave', $.pGrpImgMouseleave).on('click', $.pGrpImgClick);
 				this.remove();
 			};
