@@ -44,10 +44,11 @@ jQuery.fn.photoGroup = function(options) {
 		$.photoGroupScalars = {}; // A class scoped scalar dictionary is used to find the original scale by id.
 	if (!$.photoGroupVectors)
 		$.photoGroupVectors = {}; // A class scoped vector dictionary is used to find the original translation vector by id.
-	if (!$.photoGroupCount)
-		$.photoGroupCount = 1; // A class scoped instance count is used to help ensure unique ids.
 	if (!$.photoGroupAnimation)
-		$.photoGroupAnimation = {}; // A class scoped dictionary to track active animations.
+		$.photoGroupAnimation = {}; // A class scoped dictionary is used to track active animations.
+	if (!$.photoGroupCount)
+		$.photoGroupCount = 0; // A class scoped instance count is used to help ensure unique ids.
+	$.photoGroupCount++;
 	
 	// Define photoGroupAnimation states.
 	var animatingNone = 0,
