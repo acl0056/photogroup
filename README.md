@@ -25,3 +25,15 @@ Javascript:
         "/images/3.jpg",  /* or without thumb */
       ]
     });
+
+photoGroup(options)
+	Parameters:
+		options - An object with requied and optional arguments.
+		
+		Required:
+			photoUrls - A required array of photo items, which can be a url string or an object with image and thumb properties, {image:"url",thumb:"url"}.
+			
+		Optional:
+			thumbWidth - An optional width for the thumbnails. Defaults to 160.
+			thumbHeight - An optional height for the thumbnails. Defaults to 160.
+			mouseoverScale - An optional scalar used to increase image scale on mouseover. Defaults to 1.5.
