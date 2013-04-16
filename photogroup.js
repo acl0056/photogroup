@@ -310,7 +310,6 @@ jQuery.fn.photoGroup = function(options) {
 		
 	// Re-calculate row and columns on resize. Note: this only works if "this" has a flexible width that resizes, which is left up to your implementation.
 	var delayInterval;
-	var start, end;
 	var self = this;
 	function delayedResize(){
 		clearInterval(delayInterval);
