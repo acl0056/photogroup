@@ -191,7 +191,7 @@ jQuery.fn.photoGroup = function(options) {
 			else if ($.photoGroupAnimation[thisId] == animatingMouseLeave) {
 				$.photoGroupAnimation[thisId] = animatingMouseEnter;
 			}
-		}
+		};
 		//! photoGroupMouseLeave
 		$.photoGroupMouseLeave = function(e){
 			var $this = $(this), thisId = $this.attr("id");
@@ -212,7 +212,7 @@ jQuery.fn.photoGroup = function(options) {
 			else if ($.photoGroupAnimation[thisId] == animatingMouseEnter) {
 				$.photoGroupAnimation[thisId] = animatingMouseLeave;
 			}
-		}
+		};
 		//! photoGroupClick
 		$.photoGroupClick = function(e){
 			var $this = $(this),
@@ -303,7 +303,7 @@ jQuery.fn.photoGroup = function(options) {
 			});
 			if (!$next.hasClass("photoGroupImg"))
 				$("#photoGroupNext").hide();
-		}
+		};
 	}
 	// Set listeners
 	$(".photoGroupImg").off('mouseenter').on('mouseenter', $.photoGroupMouseEnter)
