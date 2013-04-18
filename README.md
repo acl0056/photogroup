@@ -8,7 +8,7 @@ Many gallery and image viewers available presume that you will be adding them to
 
 Photogroup determines the number of rows and columns of its thumbnails automatically based on its parent's width and a fixed thumbnail size, which can optionally be passed into the constructor. Thumbnail images are not required, since larger images will be scaled down to thumbnail size anyway.  But when thumbnails are provided, the photos will appear to load faster.
 ## Dependencies:
-REQUIRES jQuery and the [Transit jQuery plugin](https://github.com/rstacruz/jquery.transit).
+Requires jQuery and the [Transit jQuery plugin](https://github.com/rstacruz/jquery.transit).
 
 ### Usage:
 HTML:
