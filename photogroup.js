@@ -177,7 +177,7 @@ jQuery.fn.photoGroup = function(options) {
 			var $this = $(this), thisId = $this.attr("id");
 			if (!$.photoGroupAnimation[thisId]) {
 				var scale = $.photoGroupScalars[thisId];
-				$this.css({"z-index":1});
+				$this.css({"z-index":2});
 				$.photoGroupAnimation[thisId] = animatingMouseEnter;
 				$this.transition({ scale: scale*mouseoverScale }, 'fast', function(){ 
 					if ($.photoGroupAnimation[thisId] == animatingMouseEnter)
@@ -197,9 +197,10 @@ jQuery.fn.photoGroup = function(options) {
 			var $this = $(this), thisId = $this.attr("id");
 			if (!$.photoGroupAnimation[thisId]) {
 				var scale = $.photoGroupScalars[ $this.attr("id") ];
-				$this.css({"z-index":0});
-				$.photoGroupAnimation[thisId] = animatingMouseLeave;
+				$.photoGroupAnimation[thisId] = animatingMouseLeave; 
+				$this.css({"z-index":1});
 				$this.transition({ scale: scale }, 'fast', function(){ 
+					$this.css({"z-index":0});
 					if ($.photoGroupAnimation[thisId] == animatingMouseLeave)
 						$.photoGroupAnimation[thisId] = animatingNone;
 					else if ($.photoGroupAnimation[thisId] == animatingMouseEnter) {
@@ -236,7 +237,7 @@ jQuery.fn.photoGroup = function(options) {
 			ih = parseInt(scale*h);
 			x = (ww-iw)/2 - (w-iw)/2;
 			y = (wh-ih)/2 - (h-ih)/2;
-			var style = " style='position:fixed;font-size:xx-large;font-weight:900;width:40px;height:30px;z-index:5000;top:";
+			var style = " style='position:fixed;font-size:xx-large;font-weight:900;width:35px;height:30px;z-index:5000;top:";
 			$("body").append(
 				"<div id=imgViewMask style='position:fixed;background-color:rgba(0,0,0,0.5);top:0;left:0;width:"+ww+"px;height:"+wh+"px;' >"+
 					"<div id=photoGroupPrev class=photoGroupButton"+style+(wh/2-15)+"px;left:10px;' >&nbsp;&lt;&nbsp;</div>"+
