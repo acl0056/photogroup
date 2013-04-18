@@ -119,7 +119,7 @@ jQuery.fn.photoGroup = function(options) {
 	//! Generate HTML
 	var parentId = this.attr("id"),
 		idAppend = $.photoGroupCount+parentId,
-		html = ['<div id=pGrpDivO',idAppend,' style="width:',outerWidth,'px;height:',(rows*(tBorderSize+thumbHeight)),'px;" >'],
+		html = ['<div id=photoGroupDivO',idAppend,' style="width:',outerWidth,'px;height:',(rows*(tBorderSize+thumbHeight)),'px;" >'],
 		backHtml = [],
 		imageHtml = [],
 		w=0,
@@ -131,8 +131,8 @@ jQuery.fn.photoGroup = function(options) {
 			imageUrl,
 			thumbUrl,
 			x = col*thumbWidth, y = row*thumbHeight,
-			imgId = 'pGrpImg'+idAppend+i,
-			divId = 'pGrpDiv'+idAppend+i,
+			imgId = 'photoGroupImg'+idAppend+i,
+			divId = 'photoGroupDiv'+idAppend+i,
 			thumbHtml = "";
 			
 		if (typeof photoUrl == "string")
@@ -144,7 +144,7 @@ jQuery.fn.photoGroup = function(options) {
 			thumbUrl = photoUrl.thumb;
 		}
 		if (thumbUrl) {
-			var thumbId = 'pGrpThumb'+idAppend+i,
+			var thumbId = 'photoGroupThumb'+idAppend+i,
 			thumbHtml = '<img src="'+thumbUrl+'" id="'+thumbId+'" onload="$.photoGroupThumbReady($(this), '+x+', '+y+');" />';
 		}
 		backHtml = backHtml.concat([
@@ -154,7 +154,7 @@ jQuery.fn.photoGroup = function(options) {
 			thumbHtml
 		]);
 		imageHtml = imageHtml.concat([
-			'<img class=pGrpImg id=',imgId,' src="',imageUrl,'" style="position:absolute;max-height:none;max-width:none;top:0;left:0;display:none;"',
+			'<img class=photoGroupImg id=',imgId,' src="',imageUrl,'" style="position:absolute;max-height:none;max-width:none;top:0;left:0;display:none;"',
 			' onload="$.photoGroupReady($(this), ',x,', ',y,');" />',
 		]);
 		if (col == columns-1) {
@@ -171,9 +171,9 @@ jQuery.fn.photoGroup = function(options) {
 
 	var $currentMask;
 	// Define event handlers
-	if (!$.pGrpImgMouseEnter) {
-		//! pGrpImgMouseEnter
-		$.pGrpImgMouseEnter = function(e){
+	if (!$.photoGroupMouseEnter) {
+		//! photoGroupMouseEnter
+		$.photoGroupMouseEnter = function(e){
 			var $this = $(this), thisId = $this.attr("id");
 			if (!$.photoGroupAnimation[thisId]) {
 				var scale = $.photoGroupScalars[thisId];
@@ -192,8 +192,8 @@ jQuery.fn.photoGroup = function(options) {
 				$.photoGroupAnimation[thisId] = animatingMouseEnter;
 			}
 		}
-		//! pGrpImgMouseleave
-		$.pGrpImgMouseleave = function(e){
+		//! photoGroupMouseLeave
+		$.photoGroupMouseLeave = function(e){
 			var $this = $(this), thisId = $this.attr("id");
 			if (!$.photoGroupAnimation[thisId]) {
 				var scale = $.photoGroupScalars[ $this.attr("id") ];
@@ -213,8 +213,8 @@ jQuery.fn.photoGroup = function(options) {
 				$.photoGroupAnimation[thisId] = animatingMouseLeave;
 			}
 		}
-		//! pGrpImgClick
-		$.pGrpImgClick = function(e){
+		//! photoGroupClick
+		$.photoGroupClick = function(e){
 			var $this = $(this),
 				thisId = $this.attr("id"),
 				$prev = $this.prev(),
@@ -269,7 +269,7 @@ jQuery.fn.photoGroup = function(options) {
 					$prev.after($this);
 					$this.css({ translate:[v[0],v[1]] });
 					$.photoGroupAnimation[thisId] = animatingNone;
-					$this.on('mouseenter', $.pGrpImgMouseEnter).on('mouseleave', $.pGrpImgMouseleave).on('click', $.pGrpImgClick);
+					$this.on('mouseenter', $.photoGroupMouseEnter).on('mouseleave', $.photoGroupMouseLeave).on('click', $.photoGroupClick);
 					$mask.remove();
 					$.photoGroupNavigation = false;
 				});
@@ -283,7 +283,7 @@ jQuery.fn.photoGroup = function(options) {
 				$prev.after($this);
 				$this.css({"z-index":0});
 				$.photoGroupAnimation[thisId] = animatingNone;
-				$this.on('mouseenter', $.pGrpImgMouseEnter).on('mouseleave', $.pGrpImgMouseleave).on('click', $.pGrpImgClick);
+				$this.on('mouseenter', $.photoGroupMouseEnter).on('mouseleave', $.photoGroupMouseLeave).on('click', $.photoGroupClick);
 				this.remove();
 			};
 			
@@ -293,7 +293,7 @@ jQuery.fn.photoGroup = function(options) {
 				$mask.destroy();
 				$prev.click();
 			});
-			if (!$prev.hasClass("pGrpImg"))
+			if (!$prev.hasClass("photoGroupImg"))
 				$("#photoGroupPrev").hide();
 			
 			$("#photoGroupNext").click(function(e){
@@ -301,14 +301,14 @@ jQuery.fn.photoGroup = function(options) {
 				$mask.destroy();
 				$next.click();
 			});
-			if (!$next.hasClass("pGrpImg"))
+			if (!$next.hasClass("photoGroupImg"))
 				$("#photoGroupNext").hide();
 		}
 	}
 	// Set listeners
-	$(".pGrpImg").off('mouseenter').on('mouseenter', $.pGrpImgMouseEnter)
-		.off('mouseleave').on('mouseleave', $.pGrpImgMouseleave)
-		.off('click').on('click', $.pGrpImgClick);
+	$(".photoGroupImg").off('mouseenter').on('mouseenter', $.photoGroupMouseEnter)
+		.off('mouseleave').on('mouseleave', $.photoGroupMouseLeave)
+		.off('click').on('click', $.photoGroupClick);
 		
 	// Re-calculate row and columns on resize. Note: this only works if "this" has a flexible width that resizes, which is left up to your implementation.
 	var delayInterval;
@@ -318,13 +318,13 @@ jQuery.fn.photoGroup = function(options) {
 		outerWidth = parseInt(self.css("width"));
 		columns = Math.floor( outerWidth / tOuterWidth );
 		rows = Math.ceil( photoUrlsCount / columns );
-		$("#pGrpDivO"+idAppend).css({width:outerWidth+"px",height:(rows*(tBorderSize+thumbHeight))+"px" });
+		$("#photoGroupDivO"+idAppend).css({width:outerWidth+"px",height:(rows*(tBorderSize+thumbHeight))+"px" });
 		row = 0;
 		col = 0;
 		for (i=0;i<photoUrlsCount;i++){
-			var imgId = 'pGrpImg'+idAppend+i,
-				divId = '#pGrpDiv'+idAppend+i,
-				thumbId = '#pGrpThumb'+idAppend+i,
+			var imgId = 'photoGroupImg'+idAppend+i,
+				divId = '#photoGroupDiv'+idAppend+i,
+				thumbId = '#photoGroupThumb'+idAppend+i,
 				x = col*thumbWidth,
 				y = row*thumbHeight;
 			$(divId).css({left:x,top:y});
