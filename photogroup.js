@@ -30,7 +30,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 jQuery.fn.photoGroup = function(options) {
 	if (!options || !$.isArray(options.photoUrls))
-		throw "Required photoGroup argument photoUrls should be array.";
+		throw {name:"Error", message:"Required photoGroup argument photoUrls should be array."};
 		
 	var photoUrls = options.photoUrls,
 		photoUrlsCount = photoUrls.length, i,
@@ -59,12 +59,12 @@ jQuery.fn.photoGroup = function(options) {
 	
 	// Test the photoGroupBackground class for border width.  This is needed to calculate the thumbnail cell sizes.
 	$("body").append("<div id=photoGroupBackgroundTester class=photoGroupBackground style=display:none; />");
-	var tester = $("#photoGroupBackgroundTester"),
-		tBorderSize = Math.round((parseInt( tester.css("border-top-width") ) + 
-						parseInt( tester.css("border-bottom-width") ) + 
-						parseInt( tester.css("border-left-width") ) + 
-						parseInt( tester.css("border-right-width") ) ) / 4);
-	tester.remove();
+	var $tester = $("#photoGroupBackgroundTester"),
+		tBorderSize = Math.round((parseInt( $tester.css("border-top-width") ) + 
+						parseInt( $tester.css("border-bottom-width") ) + 
+						parseInt( $tester.css("border-left-width") ) + 
+						parseInt( $tester.css("border-right-width") ) ) / 4);
+	$tester.remove();
 	
 	// Calculate number of columns and rows.
 	var tOuterWidth = tBorderSize + thumbWidth + tBorderSize, // Thumbnail cell outer width.
@@ -95,9 +95,8 @@ jQuery.fn.photoGroup = function(options) {
 			h = parseInt($img.css("height")),
 			id = $img.attr("id"),
 			s = $.photoGroupScalars[id] = getScale(thumbWidth, thumbHeight, w, h),
-			v = $.photoGroupVectors[id] = [x+borderOffset-(w-thumbWidth)/2, y+borderOffset-(h-thumbHeight)/2];
-		$img.css({display:""});
-		$img.css({ translate:[v[0],v[1]], scale:s });
+			v = $.photoGroupVectors[id] = [x+borderOffset-(w-thumbWidth)/2, y+borderOffset-(h-thumbHeight)/2];2
+		$img.css({display:"", translate:[v[0],v[1]], scale:s });
 	};
 	// The thumb ready function is called after the thumb image is loaded and everything can be calculateed based on its size.
 	$.photoGroupThumbReady = function($img, x, y) {
@@ -122,10 +121,9 @@ jQuery.fn.photoGroup = function(options) {
 		html = ['<div id=photoGroupDivO',idAppend,' style="width:',outerWidth,'px;height:',(rows*(tBorderSize+thumbHeight)),'px;" >'],
 		backHtml = [],
 		imageHtml = [],
-		w=0,
-		h=0,
 		row=0,
 		col=0;
+		
 	for (i=0;i<photoUrlsCount;i++){
 		var photoUrl = photoUrls[i],
 			imageUrl,
@@ -139,7 +137,7 @@ jQuery.fn.photoGroup = function(options) {
 			imageUrl = photoUrl;
 		else {
 			if (!(photoUrl && photoUrl.image && photoUrl.thumb))
-				throw "photoUrls should be a url string or an object with image and thumb properties.";
+				throw {name:"Error", message:"photoUrls should be a url string or an object with image and thumb properties."};
 			imageUrl = photoUrl.image;
 			thumbUrl = photoUrl.thumb;
 		}
@@ -356,6 +354,6 @@ jQuery.fn.photoGroup = function(options) {
 	}
 	$(window).resize(function(){
 		clearInterval(delayInterval);
-		delayInterval = setInterval(delayedResize,100);
+		delayInterval = setInterval(delayedResize,200);
 	});
 };
